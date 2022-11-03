@@ -1,0 +1,11 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 60cdde9..3499153 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,6 +19,7 @@ else ( WIN32 AND NOT CYGWIN )
+   set ( SRC_ZIP ${SRC_ZIP} unix/unix.c )
+   add_definitions ( -DUNIX )
+   add_definitions ( -DNO_OFF_T )
++  add_definitions ( -D_XOPEN_SOURCE=600)
+   # simpler
+ endif ( WIN32 AND NOT CYGWIN )
