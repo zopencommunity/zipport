@@ -6,6 +6,6 @@ index 60cdde9..3499153 100644
    set ( SRC_ZIP ${SRC_ZIP} unix/unix.c )
    add_definitions ( -DUNIX )
    add_definitions ( -DNO_OFF_T )
-+  add_definitions ( -D_XOPEN_SOURCE=600)
++  add_definitions ( -D_XOPEN_SOURCE=600 )
    # simpler
  endif ( WIN32 AND NOT CYGWIN )

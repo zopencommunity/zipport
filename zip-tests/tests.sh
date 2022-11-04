@@ -1,15 +1,7 @@
-#!/bin/bash
-# This script is created for testing of InfoZip utilities on Linux systems
-# and probably will not work right on the other system.
-# I didn't test it.
+#!/bin/sh
+# This script is created for testing of Zip utilities on z/os systems
+# Test script is from repo "https://github.com/pirat89/zip-tests"  
 
-# - I hope that unzip will not be generator of errors :-)
-# NOTE: may I will add some option for skipping unzip-tests
-#       or alternative results (as FAILED_CHECK or something similar)
-
-#TODO: store results of tests to variable (array). add function for
-# check of previous results
-# add option for print of results s
 export PATH="$PWD/zip:$PATH"
 zip=$(echo $(/bin/type zip) | cut -f3 -d ' ')
 scriptname="$(basename "$0")"
