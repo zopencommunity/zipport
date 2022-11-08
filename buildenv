@@ -4,7 +4,6 @@ export ZOPEN_TYPE="GIT"
 
 export ZOPEN_CONFIGURE="cmake"
 export ZOPEN_CONFIGURE_OPTS=". -DBUILD_TESTING=ON -DENABLE_STATIC_INIT=ON -DZOSLIB_GENERIC=ON -DCMAKE_INSTALL_PREFIX=\$ZOPEN_INSTALL_DIR/ -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -D_XOPEN_SOURCE=600 "
-export ZOPEN_CONFIGURE_MINIMAL="yes"
 export ZOPEN_INSTALL="cmake"
 export ZOPEN_INSTALL_OPTS="--install . --prefix \$ZOPEN_INSTALL_DIR/"
 export ZOPEN_CHECK="${PWD}/zip-tests/tests.sh"
@@ -14,9 +13,8 @@ zopen_check_results()
   dir="$1"
   pfx="$2"
   chk="$1/$2_check.log"
-  
-  totalTests=$(egrep "^Total tests:" *_check.log | awk '{ print $3}') 
-  failures=$(egrep "^Failed:" *_check.log | awk '{ print $2}')
+  totalTests=$(egrep "^Total tests:" $chk | awk '{ print $3}') 
+  failures=$(egrep "^Failed:" $chk | awk '{ print $2}')
   
 # Echo the following information to guage build health
 cat <<TEST
