@@ -2,7 +2,7 @@
 # This script is created for testing of Zip utilities on z/os systems
 # Test script is from repo "https://github.com/pirat89/zip-tests"  
 
-export PATH="$PWD/zip:$PATH"
+export PATH="$PWD:$PATH"
 zip=$(echo $(/bin/type zip) | cut -f3 -d ' ')
 scriptname="$(basename "$0")"
 TEST_DIR="test_dir"
