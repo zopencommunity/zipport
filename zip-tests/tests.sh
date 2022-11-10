@@ -1,7 +1,7 @@
 #!/bin/sh
 # This script is created for testing of Zip utilities on z/os systems
 # Test script is from repo "https://github.com/pirat89/zip-tests"  
-set -x
+
 export PATH="$PWD:$PATH"
 zip=$(echo $(/bin/type zip) | cut -f3 -d ' ')
 scriptname="$(basename "$0")"
