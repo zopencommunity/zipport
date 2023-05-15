@@ -8,6 +8,8 @@ export ZOPEN_INSTALL="cmake"
 export ZOPEN_INSTALL_OPTS="--install . --prefix \$ZOPEN_INSTALL_DIR/"
 export ZOPEN_CHECK="${PWD}/zip-tests/tests.sh"
 
+
+//call to print check results
 zopen_check_results()
 {
   dir="$1"
