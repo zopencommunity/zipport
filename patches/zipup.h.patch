@@ -1,0 +1,17 @@
+diff --git a/unix/zipup.h b/unix/zipup.h
+index 0fc3f89..79fc7cd 100644
+--- a/unix/zipup.h
++++ b/unix/zipup.h
+@@ -12,7 +12,12 @@
+ #  define O_RDONLY 0
+ #endif
+ #ifndef O_BINARY
++#ifdef __MVS__
++//#  define O_BINARY O_TRUEBINARY
+ #  define O_BINARY 0
++#else
++#  define O_BINARY 0
++#endif /* __MVS__ */
+ #endif
+ #define fhow (O_RDONLY|O_BINARY)
+ #define fbad (-1)

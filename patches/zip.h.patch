@@ -1,0 +1,16 @@
+diff --git a/zip.h b/zip.h
+index ba03160..1b99013 100644
+--- a/zip.h
++++ b/zip.h
+@@ -136,6 +136,11 @@ typedef struct iztimes {
+    time_t ctime;                /* new creation time (!= Unix st.ctime) */
+ } iztimes;
+ 
++struct zos_file_tag {                /* File Tag Attributes         */
++       unsigned short ft_ccsid;       /*   Character Set Id          */
++       unsigned int   ft_flags :1;  /*               */
++     };
++
+ /* Lengths of headers after signatures in bytes */
+ #define LOCHEAD 26
+ #define CENHEAD 42

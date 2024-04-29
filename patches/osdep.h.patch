@@ -1,0 +1,13 @@
+diff --git a/unix/osdep.h b/unix/osdep.h
+index 10f8ee9..16a550b 100644
+--- a/unix/osdep.h
++++ b/unix/osdep.h
+@@ -67,7 +67,7 @@
+ 
+ 
+ /* Process files in binary mode */
+-#if defined(__DJGPP__) || defined(__CYGWIN__)
++#if defined(__DJGPP__) || defined(__CYGWIN__)  || defined(__MVS__)
+ #  define FOPR "rb"
+ #  define FOPM "r+b"
+ #  define FOPW "wb"
