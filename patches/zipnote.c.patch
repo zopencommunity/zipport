@@ -1,0 +1,97 @@
+diff --git a/zipnote.c b/zipnote.c
+index 5e02cb6..600ff3f 100644
+--- a/zipnote.c
++++ b/zipnote.c
+@@ -498,52 +498,52 @@ char **argv;            /* command line tokens */
+             case 'w':
+               w = 1;  break;
+             default:
+-              ziperr(ZE_PARMS, "unknown option");
+-          }
++	      ziperr(ZE_PARMS, "unknown option");
++	  }
+       else
+-        ziperr(ZE_PARMS, "zip file cannot be stdin");
++	      ziperr(ZE_PARMS, "zip file cannot be stdin");
+     } else
+-      if (k == 0)
+-      {
+-        if (zipfile == NULL)
+-        {
+-          if ((zipfile = ziptyp(argv[r])) == NULL)
+-            ziperr(ZE_MEM, "was processing arguments");
+-        }
+-        else
+-          ziperr(ZE_PARMS, "can only specify one zip file");
+-      }
+-      else
+-      {
+-        tempath = argv[r];
+-        k = 0;
+-      }
++	    if (k == 0)
++	    {
++		    if (zipfile == NULL)
++		    {
++			    if ((zipfile = ziptyp(argv[r])) == NULL)
++				    ziperr(ZE_MEM, "was processing arguments");
++		    }
++		    else
++			    ziperr(ZE_PARMS, "can only specify one zip file");
++	    }
++	    else
++	    {
++		    tempath = argv[r];
++		    k = 0;
++	    }
+   if (zipfile == NULL)
+-    ziperr(ZE_PARMS, "need to specify zip file");
++	  ziperr(ZE_PARMS, "need to specify zip file");
+ 
+   if ((in_path = malloc(strlen(zipfile) + 1)) == NULL) {
+-    ziperr(ZE_MEM, "input");
++	  ziperr(ZE_MEM, "input");
+   }
+   strcpy(in_path, zipfile);
+ 
+   /* Read zip file */
+   if ((r = readzipfile()) != ZE_OK)
+-    ziperr(r, zipfile);
++	  ziperr(r, zipfile);
+   if (zfiles == NULL)
+-    ziperr(ZE_NAME, zipfile);
++	  ziperr(ZE_NAME, zipfile);
+ 
+   /* Put comments to stdout, if not -w */
+   if (!w)
+   {
+-    for (z = zfiles; z != NULL; z = z->nxt)
+-    {
+-      printf("%c %s\n", MARK, z->zname);
+-      putclean(z->comment, z->com);
+-      printf("%c%s\n", MARK, MARKE);
+-    }
+-    printf("%c%s\n", MARK, MARKZ);
+-    putclean(zcomment, zcomlen);
+-    EXIT(ZE_OK);
++	  for (z = zfiles; z != NULL; z = z->nxt)
++	  {
++		  printf("%c %s\n", MARK, z->zname);
++		  putclean(z->comment, z->com);
++		  printf("%c%s\n", MARK, MARKE);
++	  }
++	  printf("%c%s\n", MARK, MARKZ);
++	  putclean(zcomment, zcomlen);
++	  EXIT(ZE_OK);
+   }
+ 
+   /* If updating comments, make sure zip file is writeable */
+@@ -661,7 +661,7 @@ char **argv;            /* command line tokens */
+     if ((r = zipcopy(z)) != ZE_OK)
+       ziperr(r, "was copying an entry");
+   }
+-  fclose(x);
++  fclose(in_file);
+ 
+   /* Write central directory and end of central directory with new comments */
+   if ((c = zftello(y)) == (zoff_t)-1)    /* get start of central */

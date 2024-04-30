@@ -1,0 +1,85 @@
+diff --git a/unix/unix.c b/unix/unix.c
+index f4d655d..3205c44 100644
+--- a/unix/unix.c
++++ b/unix/unix.c
+@@ -562,6 +562,69 @@ int set_new_unix_extra_field(z, s)
+ }
+ 
+ 
++
++#ifdef __MVS__
++int set_zos_extra_field(z, s)
++  struct zlist far *z;
++  z_stat *s;
++  /* Store z/OS extra field - ccsid and flags (text and deferred flags) */
++{
++  int tag_size;
++  int ef_data_size;
++  int ef_size;
++  char *extra;
++  char *cextra;
++  uint16_t val;
++
++/*  z/OS extra field
++   -------------------
++   tag       (2 bytes)
++   size      (2 bytes)
++   ccsid     (2 bytes)
++   flags     (2 bytes)
++   -------------------
++*/
++
++  ef_data_size = 4;
++  ef_size = 4 + ef_data_size;
++
++  if ((extra = (char *)malloc(z->ext + ef_size)) == NULL)
++    return ZE_MEM;
++  if ((cextra = (char *)malloc(z->cext + ef_size)) == NULL)
++    return ZE_MEM;
++
++  if (z->ext)
++    memcpy(extra, z->extra, z->ext);
++  if (z->cext)
++    memcpy(cextra, z->cextra, z->cext);
++
++  free(z->extra);
++  z->extra = extra;
++  free(z->cextra);
++  z->cextra = cextra;
++
++  z->extra[z->ext + 0] = 'z';   /* Extra-field block ID value (0x737A) */
++  z->extra[z->ext + 1] = 's';
++  z->extra[z->ext + 2] = (char)ef_data_size;  /* Length of data part */
++  z->extra[z->ext + 3] = 0;
++
++  /* File tag info from file status information structure s */
++  val = s->st_tag.ft_ccsid;
++  z->extra[z->ext + 4] = (char)(val & 0xFF);
++  val = val >> 8;
++  z->extra[z->ext + 5] = (char)(val & 0xFF);
++
++  /* Copy local extra field to central directory extra field */
++  memcpy((z->cextra) + z->cext, (z->extra) + z->ext, ef_size);
++
++  z->ext = z->ext + ef_size;
++  z->cext = z->cext + ef_size;
++
++  return ZE_OK;
++}
++#endif /* __MVS__ */
++
++
+ int set_extra_field(z, z_utim)
+   struct zlist far *z;
+   iztimes *z_utim;
+@@ -679,6 +742,10 @@ int set_extra_field(z, z_utim)
+ 
+   /* new unix extra field */
+   set_new_unix_extra_field(z, &s);
++ #ifdef __MVS__
++  /* z/OS extra field */
++  set_zos_extra_field(z, &s);
++#endif /* __MVS__ */
+ 
+   return ZE_OK;
+ }

@@ -1,0 +1,17 @@
+diff --git a/zip.c b/zip.c
+index 439821f..23b3a9c 100644
+--- a/zip.c
++++ b/zip.c
+@@ -3895,6 +3895,12 @@ char **argv;            /* command line tokens */
+       if ((yd = mkstemp(tempzip)) == EOF) {
+         ZIPERR(ZE_TEMP, tempzip);
+       }
++      #ifdef __MVS__
++      struct zos_file_tag z_tag = {.ft_ccsid=FT_BINARY, .ft_flags=0};
++      if (fcntl(yd, F_SETTAG, &z_tag) < 0)
++        ZIPERR(ZE_TEMP, "set file tag error");
++      #endif /* __MVS__ */
++
+       if ((y = fdopen(yd, FOPW_TMP)) == NULL) {
+         ZIPERR(ZE_TEMP, tempzip);
+       }
