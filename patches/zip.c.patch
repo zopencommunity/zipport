@@ -1,8 +1,8 @@
 diff --git a/zip.c b/zip.c
-index 439821f..900e323 100644
+index 439821f..23b3a9c 100644
 --- a/zip.c
 +++ b/zip.c
-@@ -3895,9 +3895,17 @@ char **argv;            /* command line tokens */
+@@ -3895,6 +3895,12 @@ char **argv;            /* command line tokens */
        if ((yd = mkstemp(tempzip)) == EOF) {
          ZIPERR(ZE_TEMP, tempzip);
        }
@@ -15,8 +15,3 @@ index 439821f..900e323 100644
        if ((y = fdopen(yd, FOPW_TMP)) == NULL) {
          ZIPERR(ZE_TEMP, tempzip);
        }
-+      //disable autoconversion on y
-+      __disableautocvt(y);
-     }
- #else
-     if ((tempzip = tempname(zipfile)) == NULL) {
