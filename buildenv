@@ -2,6 +2,7 @@
 ZIP_VERSION="3.0"
 
 export ZOPEN_BUILD_LINE="DEV"
+export ZOPEN_CATEGORIES="compression"
 export ZOPEN_DEV_URL="https://github.com/LuaDist/zip.git"
 export ZOPEN_DEV_DEPS="git make cmake zoslib"
 
