@@ -1,5 +1,5 @@
 diff --git a/zipup.c b/zipup.c
-index 39f7d9c..0f5ba04 100644
+index 39f7d9c..5c703e7 100644
 --- a/zipup.c
 +++ b/zipup.c
 @@ -132,7 +132,6 @@
@@ -19,3 +19,38 @@ index 39f7d9c..0f5ba04 100644
      z->tim = tim;
  
  #if defined(VMS) && defined(VMS_PK_EXTRA)
+@@ -1298,14 +1297,19 @@ local int zl_deflate_init(pack_level)
+     int err = Z_OK;
+     int zp_err = ZE_OK;
+ 
+-    if (zlib_version[0] != ZLIB_VERSION[0]) {
++    char temp_zlibVersion[10];
++
++    strcpy(temp_zlibVersion, zlib_version);
++    __e2a_s(temp_zlibVersion);
++
++    if (temp_zlibVersion[0] != ZLIB_VERSION[0]) {
+         sprintf(errbuf, "incompatible zlib version (expected %s, found %s)",
+-              ZLIB_VERSION, zlib_version);
++              ZLIB_VERSION, temp_zlibVersion);
+         zp_err = ZE_LOGIC;
+-    } else if (strcmp(zlib_version, ZLIB_VERSION) != 0) {
++    } else if (strncmp(temp_zlibVersion, ZLIB_VERSION, strlen(ZLIB_VERSION)) != 0) {
+         fprintf(mesg,
+                 "\twarning:  different zlib version (expected %s, using %s)\n",
+-                ZLIB_VERSION, zlib_version);
++                ZLIB_VERSION, temp_zlibVersion);
+     }
+ 
+     /* windowBits = log2(WSIZE) */
+@@ -1315,8 +1319,9 @@ local int zl_deflate_init(pack_level)
+     zstrm.zfree = (free_func)Z_NULL;
+ 
+     Trace((stderr, "initializing deflate()\n"));
++#pragma convert("IBM-1047")
+     err = deflateInit2(&zstrm, pack_level, Z_DEFLATED, -windowBits, 8, 0);
+-
++#pragma convert(pop)
+     if (err == Z_MEM_ERROR) {
+         sprintf(errbuf, "cannot initialize zlib deflate");
+         zp_err = ZE_MEM;
