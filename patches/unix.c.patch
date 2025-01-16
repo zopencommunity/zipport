@@ -1,8 +1,22 @@
 diff --git a/unix/unix.c b/unix/unix.c
-index f4d655d..3205c44 100644
+index f4d655d..7ec5777 100644
 --- a/unix/unix.c
 +++ b/unix/unix.c
-@@ -562,6 +562,69 @@ int set_new_unix_extra_field(z, s)
+@@ -378,7 +378,12 @@ ulg filetime(f, a, n, t)
+   free(name);
+ 
+   if (a != NULL) {
+-#ifndef OS390
++/*
++ * Using legacy Unix mode flags for MVS because the file_type field defined in 
++ * mode_t is stored in the upper nibble. Shifting it causes it to exceed the 
++ * 32-bit data limit. 
++*/
++#if !defined(OS390) && !defined(__MVS__)
+     *a = ((ulg)s.st_mode << 16) | !(s.st_mode & S_IWRITE);
+ #else
+ /*
+@@ -562,6 +567,69 @@ int set_new_unix_extra_field(z, s)
  }
  
  
@@ -72,7 +86,7 @@ index f4d655d..3205c44 100644
  int set_extra_field(z, z_utim)
    struct zlist far *z;
    iztimes *z_utim;
-@@ -679,6 +742,10 @@ int set_extra_field(z, z_utim)
+@@ -679,6 +747,10 @@ int set_extra_field(z, z_utim)
  
    /* new unix extra field */
    set_new_unix_extra_field(z, &s);
