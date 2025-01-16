@@ -1,0 +1,17 @@
+diff --git a/fileio.c b/fileio.c
+index 1847e62..8fbac74 100644
+--- a/fileio.c
++++ b/fileio.c
+@@ -1113,6 +1113,12 @@ int issymlnk(a)
+ ulg a;                  /* Attributes returned by filetime() */
+ /* Return true if the attributes are those of a symbolic link */
+ {
++#ifdef __MVS__
++/* mode_t flags stored in legacy unix format*/
++#define UNX_IFLNK      0120000
++  return ((a >> 16) & UNX_IFLNK) == UNX_IFLNK;
++#endif
++
+ #ifndef QDOS
+ #ifdef S_IFLNK
+ #ifdef __human68k__
