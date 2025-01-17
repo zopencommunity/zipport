@@ -4,13 +4,15 @@ ZIP_VERSION="3.0"
 export ZOPEN_BUILD_LINE="DEV"
 export ZOPEN_CATEGORIES="compression"
 export ZOPEN_DEV_URL="https://github.com/LuaDist/zip.git"
-export ZOPEN_DEV_DEPS="git make cmake zoslib"
+export ZOPEN_DEV_DEPS="git make cmake zoslib zedc_ascii"
 
 export ZOPEN_CONFIGURE="cmake"
 export ZOPEN_CONFIGURE_OPTS="."
 export ZOPEN_INSTALL="cmake"
 export ZOPEN_INSTALL_OPTS="--install . --prefix \$ZOPEN_INSTALL_DIR/"
 export ZOPEN_CHECK="${PWD}/zip-tests/tests.sh"
+export ZOPEN_EXTRA_CFLAGS="-DUSE_ZLIB"
+export ZOPEN_COMP=CLANG
 
 zopen_check_results()
 {
