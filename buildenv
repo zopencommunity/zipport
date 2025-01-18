@@ -6,10 +6,9 @@ export ZOPEN_CATEGORIES="compression"
 export ZOPEN_DEV_URL="https://github.com/LuaDist/zip.git"
 export ZOPEN_DEV_DEPS="git make cmake zoslib zedc_ascii"
 
-export ZOPEN_CONFIGURE="cmake"
-export ZOPEN_CONFIGURE_OPTS="."
-export ZOPEN_INSTALL="cmake"
-export ZOPEN_INSTALL_OPTS="--install . --prefix \$ZOPEN_INSTALL_DIR/"
+export ZOPEN_CONFIGURE="skip"
+export ZOPEN_INSTALL_OPTS="-f unix/Makefile install prefix=\$ZOPEN_INSTALL_DIR/"
+export ZOPEN_MAKE_OPTS="-f unix/Makefile generic"
 export ZOPEN_CHECK="${PWD}/zip-tests/tests.sh"
 export ZOPEN_EXTRA_CFLAGS="-DUSE_ZLIB"
 export ZOPEN_COMP=CLANG
