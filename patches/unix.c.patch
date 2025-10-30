@@ -1,5 +1,5 @@
 diff --git a/unix/unix.c b/unix/unix.c
-index f4d655d..7ec5777 100644
+index f4d655d..b9fde10 100644
 --- a/unix/unix.c
 +++ b/unix/unix.c
 @@ -378,7 +378,12 @@ ulg filetime(f, a, n, t)
@@ -43,7 +43,7 @@ index f4d655d..7ec5777 100644
 +   -------------------
 +*/
 +
-+  ef_data_size = 4;
++  ef_data_size = 2;
 +  ef_size = 4 + ef_data_size;
 +
 +  if ((extra = (char *)malloc(z->ext + ef_size)) == NULL)
