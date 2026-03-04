@@ -1,0 +1,20 @@
+diff --git a/unix/configure b/unix/configure
+index d7796f9..117906c 100644
+--- a/unix/configure
++++ b/unix/configure
+@@ -24,6 +24,15 @@ LN="ln -s"
+ 
+ CFLAGS_OPT=''
+ 
++# External flags can be set via environment variables:
++# CFLAGS_EXTRA, LDFLAGS_EXTRA, LIBS_EXTRA
++# These will be used in configure tests and appended to final flags
++
++# Apply external flags to configure tests
++[ -n "${CFLAGS_EXTRA}" ] && CFLAGS="${CFLAGS} ${CFLAGS_EXTRA}"
++[ -n "${LDFLAGS_EXTRA}" ] && LFLAGS1="${LFLAGS1} ${LDFLAGS_EXTRA}"
++[ -n "${LIBS_EXTRA}" ] && LFLAGS2="${LFLAGS2} ${LIBS_EXTRA}"
++
+ # bzip2
+ IZ_BZIP2=${3-}
+ CFLAGS_BZ=''

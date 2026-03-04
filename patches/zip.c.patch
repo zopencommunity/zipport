@@ -1,8 +1,19 @@
 diff --git a/zip.c b/zip.c
-index 439821f..c1ca774 100644
+index 8e077f9..e2836c3 100644
 --- a/zip.c
 +++ b/zip.c
-@@ -4896,6 +4896,12 @@ char **argv;            /* command line tokens */
+@@ -67,6 +67,10 @@
+ # include "bzlib.h"
+ #endif
+ 
++#ifdef __MVS__
++# include <zos.h>
++#endif
++
+ #define MAXCOM 256      /* Maximum one-line comment size */
+ 
+ 
+@@ -4896,6 +4900,12 @@ char **argv;            /* command line tokens */
        if ((yd = mkstemp(tempzip)) == EOF) {
          ZIPERR(ZE_TEMP, tempzip);
        }
