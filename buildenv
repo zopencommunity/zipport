@@ -1,27 +1,65 @@
-# bump: zip-version /ZIP_VERSION="(.*)"/ https://github.com/luadist/zip.git|semver:*
+# bump: zip-version /ZIP_VERSION="(.*)"/ https://sourceforge.net/projects/infozip/files/Zip%203.x%20%28latest%29/|re:/(\d+\.\d+)\x2f/
 ZIP_VERSION="3.0"
+ZIP_VERSION_SHORT=$(echo $ZIP_VERSION | tr -d '.')
 
-export ZOPEN_BUILD_LINE="DEV"
+export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_CATEGORIES="compression"
 export ZOPEN_DEV_URL="https://github.com/LuaDist/zip.git"
-export ZOPEN_DEV_DEPS="git make cmake zoslib zedc_ascii"
-
-export ZOPEN_CONFIGURE="cmake"
-export ZOPEN_CONFIGURE_OPTS="."
-export ZOPEN_INSTALL="cmake"
-export ZOPEN_INSTALL_OPTS="--install . --prefix \$ZOPEN_INSTALL_DIR/"
+export ZOPEN_DEV_DEPS="git make cmake zoslib zedc_asciii"
+export ZOPEN_STABLE_URL="https://sourceforge.net/projects/infozip/files/Zip%203.x%20%28latest%29/${ZIP_VERSION}/zip${ZIP_VERSION_SHORT}.tar.gz"
+export ZOPEN_STABLE_DEPS="make cmake zoslib zedc_ascii xz patch"
+export ZOPEN_CONFIGURE="skip"
+export ZOPEN_MAKE_OPTS="-f unix/Makefile generic"
 export ZOPEN_CHECK="${PWD}/zip-tests/tests.sh"
 export ZOPEN_EXTRA_CFLAGS="-DUSE_ZLIB"
 export ZOPEN_COMP=CLANG
+
+zopen_post_extract() {
+  DEBIAN_VERSION="15"
+  DEBIAN_URL="https://deb.debian.org/debian/pool/main/z/zip/zip_3.0-${DEBIAN_VERSION}.debian.tar.xz"
+  HOMEBREW_PATCH_URL="https://raw.githubusercontent.com/Homebrew/homebrew-core/1cf441a0/Patches/zip/xcode15.diff"
+  
+  echo "Downloading Debian patches from ${DEBIAN_URL}..."
+  curl -L -o debian_patches.tar.xz ${DEBIAN_URL}
+  tar -xJf debian_patches.tar.xz
+  rm debian/patches/12-fix-build-with-gcc-14.patch
+  echo "Downloading Homebrew patch from ${HOMEBREW_PATCH_URL}..."
+  curl -L -o xcode15.diff ${HOMEBREW_PATCH_URL}
+ 
+  src_dir="$1"
+  original_dir=$(pwd) 
+  cd "${src_dir}" || return 1
+
+  # The patches in debian/patches/ assume they are applied with -p1 from the root of the source
+  # Let's check the series file to apply them in order
+  if [ -d ../debian/patches ]; then
+    for p in ../debian/patches/*.patch; do
+      echo "Applying $p..."
+      patch -p1 < "$p"
+    done
+  fi
+
+  echo "Applying ../xcode15.diff..."
+  patch -p1 < "../xcode15.diff"
+
+  cd "${original_dir}"
+  rm -rf debian debian_patches.tar.xz xcode15.diff
+}
+
+zopen_pre_patch() {
+  export CFLAGS_EXTRA="$CPPFLAGS $CFLAGS"
+  export LDFLAGS_EXTRA="$LDFLAGS"
+  export LIBS_EXTRA="$LIBS"
+}
 
 zopen_check_results()
 {
   dir="$1"
   pfx="$2"
   chk="$1/$2_check.log"
-  totalTests=$(egrep "^Total tests:" $chk | awk '{ print $3}') 
+  totalTests=$(egrep "^Total tests:" $chk | awk '{ print $3}')
   failures=$(egrep "^Failed:" $chk | awk '{ print $2}')
-  
+
 # Echo the following information to guage build health
 cat <<TEST
 actualFailures:$failures
