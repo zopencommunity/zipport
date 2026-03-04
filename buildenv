@@ -13,6 +13,8 @@ export ZOPEN_MAKE_OPTS="-f unix/Makefile generic"
 export ZOPEN_CHECK="${PWD}/zip-tests/tests.sh"
 export ZOPEN_EXTRA_CFLAGS="-DUSE_ZLIB"
 export ZOPEN_COMP=CLANG
+export ZOPEN_INSTALL_OPTS="-f unix/Makefile install prefix=\$ZOPEN_INSTALL_DIR/"
+export ZOPEN_NAME="zip-${ZIP_VERSION}"
 
 zopen_post_extract() {
   DEBIAN_VERSION="15"
