@@ -1,11 +1,13 @@
-# bump: zip-version /ZIP_VERSION="(.*)"/ https://sourceforge.net/projects/infozip/files/Zip%203.x%20%28latest%29/|re:/(\d+\.\d+)\x2f/
 ZIP_VERSION="3.0"
 ZIP_VERSION_SHORT=$(echo $ZIP_VERSION | tr -d '.')
+
+# bump: debian-version /DEBIAN_VERSION="(.*)"/ https://deb.debian.org/debian/pool/main/z/zip/|re:/zip_3\.0-(\d+)\.debian\.tar\.xz/|semver:*
+DEBIAN_VERSION="15"
 
 export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_CATEGORIES="compression"
 export ZOPEN_DEV_URL="https://github.com/LuaDist/zip.git"
-export ZOPEN_DEV_DEPS="git make cmake zoslib zedc_asciii"
+export ZOPEN_DEV_DEPS="git make cmake zoslib zedc_ascii"
 export ZOPEN_STABLE_URL="https://sourceforge.net/projects/infozip/files/Zip%203.x%20%28latest%29/${ZIP_VERSION}/zip${ZIP_VERSION_SHORT}.tar.gz"
 export ZOPEN_STABLE_DEPS="make cmake zoslib zedc_ascii xz patch"
 export ZOPEN_CONFIGURE="skip"
@@ -17,35 +19,42 @@ export ZOPEN_INSTALL_OPTS="-f unix/Makefile install prefix=\$ZOPEN_INSTALL_DIR/"
 export ZOPEN_NAME="zip-${ZIP_VERSION}"
 
 zopen_post_extract() {
-  DEBIAN_VERSION="15"
-  DEBIAN_URL="https://deb.debian.org/debian/pool/main/z/zip/zip_3.0-${DEBIAN_VERSION}.debian.tar.xz"
+  DEBIAN_URL="https://deb.debian.org/debian/pool/main/z/zip/zip_${ZIP_VERSION}-${DEBIAN_VERSION}.debian.tar.xz"
   HOMEBREW_PATCH_URL="https://raw.githubusercontent.com/Homebrew/homebrew-core/1cf441a0/Patches/zip/xcode15.diff"
   
   echo "Downloading Debian patches from ${DEBIAN_URL}..."
-  curl -L -o debian_patches.tar.xz ${DEBIAN_URL}
-  tar -xJf debian_patches.tar.xz
-  rm debian/patches/12-fix-build-with-gcc-14.patch
+  curl -f -L -o debian_patches.tar.xz ${DEBIAN_URL} || return 1
+  tar -xJf debian_patches.tar.xz || return 1
+  rm -f debian/patches/12-fix-build-with-gcc-14.patch
   echo "Downloading Homebrew patch from ${HOMEBREW_PATCH_URL}..."
-  curl -L -o xcode15.diff ${HOMEBREW_PATCH_URL}
+  curl -f -L -o xcode15.diff ${HOMEBREW_PATCH_URL} || return 1
  
   src_dir="$1"
-  original_dir=$(pwd) 
+  original_dir=$(pwd)
+  debian_dir="${original_dir}/debian"
+  
   cd "${src_dir}" || return 1
 
   # The patches in debian/patches/ assume they are applied with -p1 from the root of the source
-  # Let's check the series file to apply them in order
-  if [ -d ../debian/patches ]; then
-    for p in ../debian/patches/*.patch; do
-      echo "Applying $p..."
-      patch -p1 < "$p"
-    done
+  # Use the series file to apply them in the correct order
+  if [ -f "${debian_dir}/patches/series" ]; then
+    while read -r p; do
+      # Skip empty lines and comments
+      case "$p" in
+        ""|'#'*) continue ;;
+      esac
+      if [ -f "${debian_dir}/patches/$p" ]; then
+        echo "Applying ${debian_dir}/patches/$p..."
+        patch -p1 < "${debian_dir}/patches/$p" || return 1
+      fi
+    done < "${debian_dir}/patches/series"
   fi
 
-  echo "Applying ../xcode15.diff..."
-  patch -p1 < "../xcode15.diff"
+  echo "Applying ${original_dir}/xcode15.diff..."
+  patch -p1 < "${original_dir}/xcode15.diff" || return 1
 
   cd "${original_dir}"
-  rm -rf debian debian_patches.tar.xz xcode15.diff
+  rm -rf "${debian_dir}" debian_patches.tar.xz xcode15.diff
 }
 
 zopen_pre_patch() {
