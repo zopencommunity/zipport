@@ -20,14 +20,10 @@ export ZOPEN_NAME="zip-${ZIP_VERSION}"
 
 zopen_post_extract() {
   DEBIAN_URL="https://deb.debian.org/debian/pool/main/z/zip/zip_${ZIP_VERSION}-${DEBIAN_VERSION}.debian.tar.xz"
-  HOMEBREW_PATCH_URL="https://raw.githubusercontent.com/Homebrew/homebrew-core/1cf441a0/Patches/zip/xcode15.diff"
   
   echo "Downloading Debian patches from ${DEBIAN_URL}..."
   curl -f -L -o debian_patches.tar.xz ${DEBIAN_URL} || return 1
   tar -xJf debian_patches.tar.xz || return 1
-  rm -f debian/patches/12-fix-build-with-gcc-14.patch
-  echo "Downloading Homebrew patch from ${HOMEBREW_PATCH_URL}..."
-  curl -f -L -o xcode15.diff ${HOMEBREW_PATCH_URL} || return 1
  
   src_dir="$1"
   original_dir=$(pwd)
@@ -50,11 +46,8 @@ zopen_post_extract() {
     done < "${debian_dir}/patches/series"
   fi
 
-  echo "Applying ${original_dir}/xcode15.diff..."
-  patch -p1 < "${original_dir}/xcode15.diff" || return 1
-
   cd "${original_dir}"
-  rm -rf "${debian_dir}" debian_patches.tar.xz xcode15.diff
+  rm -rf "${debian_dir}" debian_patches.tar.xz
 }
 
 zopen_pre_patch() {
