@@ -1,0 +1,13 @@
+diff --git a/revision.h b/revision.h
+index 7348cb7..eeb5150 100644
+--- a/revision.h
++++ b/revision.h
+@@ -58,7 +58,7 @@ ZCONST char *copyright[] = {
+ };
+ 
+ ZCONST char * far versinfolines[] = {
+-"This is %s %s (%s), by Info-ZIP.",
++"This is %s %s (%s), by Info-ZIP. Includes Debian fixes and z/OS port by zopencommunity",
+ "Currently maintained by E. Gordon.  Please send bug reports to",
+ "the authors using the web page at www.info-zip.org; see README for details.",
+ "",

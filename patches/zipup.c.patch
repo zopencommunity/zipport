@@ -1,21 +1,26 @@
 diff --git a/zipup.c b/zipup.c
-index 39f7d9c..0f5ba04 100644
+index 39f7d9c..577a840 100644
 --- a/zipup.c
 +++ b/zipup.c
-@@ -132,7 +132,6 @@
- #ifdef THEOS
+@@ -133,6 +133,10 @@
  #  include "theos/zipup.h"
  #endif
--
+ 
++#ifdef __MVS__
++# include <zos.h>
++#endif
++
  /* Local functions */
  #ifndef RISCOS
     local int suffixes OF((char *, char *));
-@@ -610,7 +609,7 @@ struct zlist far *z;    /* zip entry to compress */
+@@ -610,7 +614,9 @@ struct zlist far *z;    /* zip entry to compress */
          return ZE_OPEN;
  #endif
      }
 -
++#ifdef __MVS__
 +    __disableautocvt(ifile);
++#endif
      z->tim = tim;
  
  #if defined(VMS) && defined(VMS_PK_EXTRA)

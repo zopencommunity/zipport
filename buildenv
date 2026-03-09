@@ -1,27 +1,69 @@
-# bump: zip-version /ZIP_VERSION="(.*)"/ https://github.com/luadist/zip.git|semver:*
 ZIP_VERSION="3.0"
+ZIP_VERSION_SHORT=$(echo $ZIP_VERSION | tr -d '.')
 
-export ZOPEN_BUILD_LINE="DEV"
+# bump: debian-version /DEBIAN_VERSION="(.*)"/ https://deb.debian.org/debian/pool/main/z/zip/|re:/zip_3\.0-(\d+)\.debian\.tar\.xz/|semver:*
+DEBIAN_VERSION="15"
+
+export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_CATEGORIES="compression"
 export ZOPEN_DEV_URL="https://github.com/LuaDist/zip.git"
 export ZOPEN_DEV_DEPS="git make cmake zoslib zedc_ascii"
-
-export ZOPEN_CONFIGURE="cmake"
-export ZOPEN_CONFIGURE_OPTS="."
-export ZOPEN_INSTALL="cmake"
-export ZOPEN_INSTALL_OPTS="--install . --prefix \$ZOPEN_INSTALL_DIR/"
+export ZOPEN_STABLE_URL="https://sourceforge.net/projects/infozip/files/Zip%203.x%20%28latest%29/${ZIP_VERSION}/zip${ZIP_VERSION_SHORT}.tar.gz"
+export ZOPEN_STABLE_DEPS="make cmake zoslib zedc_ascii xz patch"
+export ZOPEN_CONFIGURE="skip"
+export ZOPEN_MAKE_OPTS="-f unix/Makefile generic"
 export ZOPEN_CHECK="${PWD}/zip-tests/tests.sh"
 export ZOPEN_EXTRA_CFLAGS="-DUSE_ZLIB"
 export ZOPEN_COMP=CLANG
+export ZOPEN_INSTALL_OPTS="-f unix/Makefile install prefix=\$ZOPEN_INSTALL_DIR/"
+export ZOPEN_NAME="zip-${ZIP_VERSION}"
+
+zopen_post_extract() {
+  DEBIAN_URL="https://deb.debian.org/debian/pool/main/z/zip/zip_${ZIP_VERSION}-${DEBIAN_VERSION}.debian.tar.xz"
+  
+  echo "Downloading Debian patches from ${DEBIAN_URL}..."
+  curl -f -L -o debian_patches.tar.xz ${DEBIAN_URL} || return 1
+  tar -xJf debian_patches.tar.xz || return 1
+ 
+  src_dir="$1"
+  original_dir=$(pwd)
+  debian_dir="${original_dir}/debian"
+  
+  cd "${src_dir}" || return 1
+
+  # The patches in debian/patches/ assume they are applied with -p1 from the root of the source
+  # Use the series file to apply them in the correct order
+  if [ -f "${debian_dir}/patches/series" ]; then
+    while read -r p; do
+      # Skip empty lines and comments
+      case "$p" in
+        ""|'#'*) continue ;;
+      esac
+      if [ -f "${debian_dir}/patches/$p" ]; then
+        echo "Applying ${debian_dir}/patches/$p..."
+        patch -p1 < "${debian_dir}/patches/$p" || return 1
+      fi
+    done < "${debian_dir}/patches/series"
+  fi
+
+  cd "${original_dir}"
+  rm -rf "${debian_dir}" debian_patches.tar.xz
+}
+
+zopen_pre_patch() {
+  export CFLAGS_EXTRA="$CPPFLAGS $CFLAGS"
+  export LDFLAGS_EXTRA="$LDFLAGS"
+  export LIBS_EXTRA="$LIBS"
+}
 
 zopen_check_results()
 {
   dir="$1"
   pfx="$2"
   chk="$1/$2_check.log"
-  totalTests=$(egrep "^Total tests:" $chk | awk '{ print $3}') 
+  totalTests=$(egrep "^Total tests:" $chk | awk '{ print $3}')
   failures=$(egrep "^Failed:" $chk | awk '{ print $2}')
-  
+
 # Echo the following information to guage build health
 cat <<TEST
 actualFailures:$failures
