@@ -2,7 +2,7 @@ ZIP_VERSION="3.0"
 ZIP_VERSION_SHORT=$(echo $ZIP_VERSION | tr -d '.')
 
 # bump: debian-version /DEBIAN_VERSION="(.*)"/ https://deb.debian.org/debian/pool/main/z/zip/|re:/zip_3\.0-(\d+)\.debian\.tar\.xz/|semver:*
-DEBIAN_VERSION="15"
+DEBIAN_VERSION="16"
 
 export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_CATEGORIES="compression"
